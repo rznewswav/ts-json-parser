@@ -18,5 +18,5 @@ else
   outfiles=$([ $# != 0 ] && printf "%s\n" "$@" | xargs -I '{}' bash -c "substitute {}")
   outfiles=$(echo "$outfiles" | tr '\n' ' ')
   # shellcheck disable=SC2086
-  node --test $outfiles
+  node -r reflect-metadata -r source-map-support/register --test $outfiles
 fi
