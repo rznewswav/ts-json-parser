@@ -46,7 +46,7 @@ export function MakePillar<T>(data: T[], name: string): Pillar<T> {
         // check if we should promote to double
         if (typeof t !== 'number') {
           self.dataType = DataTypeEnum.Any;
-        } else if (t !== Math.floor(t)) {
+        } else if (isFinite(t) && t !== Math.floor(t)) {
           self.dataType = DataTypeEnum.Double;
         }
         break;
@@ -87,6 +87,25 @@ export function MakePillar<T>(data: T[], name: string): Pillar<T> {
     return data.push(...items);
   }
 
+  function castToDataType() {
+    for (let i = 0; i < data.length; i++) {
+      switch (self.dataType) {
+        case DataTypeEnum.Integer:
+          data[i] = Number(data[i]) as any;
+          break;
+        case DataTypeEnum.Double:
+          data[i] = Number(data[i]) as any;
+          break;
+        case DataTypeEnum.Boolean:
+          data[i] = Boolean(data[i]) as any;
+          break;
+        case DataTypeEnum.String:
+          data[i] = String(data[i]) as any;
+          break;
+      }
+    }
+  }
+
   return new Proxy(self, {
     get(_: any, prop: string | symbol): any {
       if (prop in self) {
@@ -111,6 +130,9 @@ export function MakePillar<T>(data: T[], name: string): Pillar<T> {
         return true;
       }
       (self as any)[prop] = item;
+      if (String(prop) === 'dataType') {
+        castToDataType();
+      }
       return true;
     },
   }) as unknown as Pillar<T>;
@@ -120,5 +142,9 @@ if (process.argv.includes('RUN_PILLARS_MAIN')) {
   const p = MakePillar<any>([1, 2, 3], 'number');
   console.log(p[0], p[6], p.dataType);
   p[6] = 'hello';
+  console.log(p[0], p[6], p.dataType);
+  p.dataType = DataTypeEnum.String;
+  console.log(p[0], p[6], p.dataType);
+  p.dataType = DataTypeEnum.Integer;
   console.log(p[0], p[6], p.dataType);
 }
