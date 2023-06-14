@@ -120,16 +120,17 @@ export function MakePillar<T>(data: T[], name: string): Pillar<T> {
       const accessed = (data as any)[prop];
       return typeof accessed === 'function' ? accessed.bind(data) : accessed;
     },
-    set(_: {}, prop: string | symbol, item: any): boolean {
+    set(target, prop, item): boolean {
       if (isFinite(+Number(prop))) {
-        checkInsertedValue(item);
-        (data as any)[prop] =
+        item =
           typeof item === 'function'
             ? item((data as any)[prop], prop, data)
             : item;
+        checkInsertedValue(item);
+        (data as any)[prop] = item;
         return true;
       }
-      (self as any)[prop] = item;
+      (target as any)[prop] = item;
       if (String(prop) === 'dataType') {
         castToDataType();
       }
