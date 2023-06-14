@@ -1,12 +1,23 @@
 import { DataTypeEnum } from './data-type.enum';
 
+export interface PillarSetter<T> {
+  [key: string]: (data: T, index: number, pillar: Pillar<T>) => void;
+}
+
 export interface PillarBase {
   dataType: DataTypeEnum;
   name: string;
   readonly [Symbol.toStringTag]: string;
 }
 
-export interface Pillar<T = unknown> extends PillarBase, Array<T> {}
+export interface Pillar<T = unknown> extends PillarBase, Array<T> {
+  /**
+   * Returns this.
+   *
+   * A TypeScript helper to provide setter function typing assistance
+   */
+  readonly Setter: PillarSetter<T>;
+}
 
 export function MakePillar<T>(data: T[], name: string): Pillar<T> {
   function checkInsertedValue(t: T) {
@@ -107,15 +118,18 @@ export function MakePillar<T>(data: T[], name: string): Pillar<T> {
   }
 
   return new Proxy(self, {
-    get(_: any, prop: string | symbol): any {
-      if (prop in self) {
-        return (self as any)[prop];
+    get(target, prop, proxy): any {
+      if (prop in target) {
+        return (target as any)[prop];
       }
       if (prop === 'push') {
         return push;
       }
       if (prop === 'isPillar') {
         return true;
+      }
+      if (prop === 'Setter') {
+        return proxy;
       }
       const accessed = (data as any)[prop];
       return typeof accessed === 'function' ? accessed.bind(data) : accessed;
@@ -140,12 +154,11 @@ export function MakePillar<T>(data: T[], name: string): Pillar<T> {
 }
 
 if (process.argv.includes('RUN_PILLARS_MAIN')) {
-  const p = MakePillar<any>([1, 2, 3], 'number');
-  console.log(p[0], p[6], p.dataType);
-  p[6] = 'hello';
-  console.log(p[0], p[6], p.dataType);
+  const p = MakePillar([1, 2, 3], 'number');
+  p.Setter[2] = (data, index, pillar) => {
+    return `data: ${data} | index: ${index}`;
+  };
+  console.log(...p);
   p.dataType = DataTypeEnum.String;
-  console.log(p[0], p[6], p.dataType);
-  p.dataType = DataTypeEnum.Integer;
-  console.log(p[0], p[6], p.dataType);
+  console.log(...p);
 }
