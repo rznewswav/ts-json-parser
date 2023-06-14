@@ -42,8 +42,7 @@ export function MakePillar<T>(data: T[], name: string): Pillar<T> {
             self.dataType = DataTypeEnum.String;
             break;
           case 'function':
-            // do nothing
-            break;
+            throw new Error('not yet supported: function');
           case 'symbol':
             throw new Error('not yet supported: symbol');
           case 'bigint':
