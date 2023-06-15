@@ -68,4 +68,10 @@ export class StringReader {
   slice() {
     return this.input.substring(this.pointer, this.input.length);
   }
+
+  seek(char: string) {
+    while (this.hasNext && this.peek !== char) {
+      this.next();
+    }
+  }
 }
