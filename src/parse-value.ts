@@ -17,7 +17,7 @@ export enum ValueType {
   NULL = 'NULL',
 }
 
-type ExtractedValue = { type: ValueType; value: string };
+export type ExtractedValue = { type: ValueType; value: string };
 
 export function parseValue(sr: StringReader): ExtractedValue {
   sr.skipWhitespaces();
