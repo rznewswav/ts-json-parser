@@ -64,4 +64,8 @@ export class StringReader {
   get peek(): string {
     return this.input[this.pointer];
   }
+
+  slice() {
+    return this.input.substring(this.pointer, this.input.length);
+  }
 }
