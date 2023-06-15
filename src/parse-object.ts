@@ -63,10 +63,8 @@ export function parseObject(input: StringReader): {
     }
 
     if (currentState === States.KEY) {
-      input.skipWhitespaces();
       currentKey = parseString(input);
       input.previous();
-      input.skipWhitespaces();
     }
 
     if (currentState === States.VALUE) {
@@ -78,6 +76,10 @@ export function parseObject(input: StringReader): {
     }
 
     input.next();
+
+    if (currentState !== States.KEY && currentState !== States.VALUE) {
+      input.skipWhitespaces();
+    }
   } while (currentState !== States.END);
 
   return accumulated;
