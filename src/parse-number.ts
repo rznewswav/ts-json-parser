@@ -21,7 +21,7 @@ const States = {
 };
 
 const nextStates: Record<string, State[]> = {
-  START: [States.MINUS, States.ZERO],
+  START: [States.MINUS, States.ZERO, States.ONE_NINE],
   MINUS: [States.ZERO, States.ONE_NINE],
   ZERO: [States.DOT, States.E_LOWER, States.E_UPPER, States.END],
   ONE_NINE: [
