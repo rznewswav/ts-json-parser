@@ -6,6 +6,8 @@ import {
   parseKeywordNull,
   parseKeywordTrue,
 } from './parse-keywords';
+import { parseObject } from './parse-object';
+import { parseArray } from './parse-array';
 
 export enum ValueType {
   STRING = 'STRING',
@@ -17,7 +19,7 @@ export enum ValueType {
   NULL = 'NULL',
 }
 
-export type ExtractedValue = { type: ValueType; value: string };
+export type ExtractedValue = { type: ValueType; value: any };
 
 export function parseValue(sr: StringReader): ExtractedValue {
   sr.skipWhitespaces();
@@ -47,9 +49,17 @@ export function parseValue(sr: StringReader): ExtractedValue {
       };
       break;
     case '{':
-      throw new Error('not yet supported: object');
+      detected = {
+        type: ValueType.OBJECT,
+        value: parseObject(sr),
+      };
+      break;
     case '[':
-      throw new Error('not yet supported: array');
+      detected = {
+        type: ValueType.ARRAY,
+        value: parseArray(sr),
+      };
+      break;
     case 't':
       detected = {
         type: ValueType.TRUE,
